@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lantern Row — Spot the Difference</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #0d1122;
+    height: 100%;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  canvas#stage {
+    display: block;
+    width: min(100vw, 160vh);
+    height: auto;
+    aspect-ratio: 1280 / 800;
+    background: #141a30;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.55);
+    touch-action: manipulation;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<canvas id="stage" width="1280" height="800" aria-label="Lantern Row, a spot-the-difference game"></canvas>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
