@@ -17,14 +17,15 @@ import { buildDossier } from './vendor/makefun-game.ts';
 
 // The grader reads the output as a different user, so every produced
 // file must be world-readable (0644) regardless of the local umask.
+// Directories are traversed only; chmod applies to files alone.
+const OUTPUT_FILE_MODE = 0o644;
 function makeWorldReadable(path) {
-  const stat = statSync(path);
-  if (stat.isDirectory()) {
+  if (statSync(path).isDirectory()) {
     for (const entry of readdirSync(path)) {
       makeWorldReadable(join(path, entry));
     }
   } else {
-    chmodSync(path, 0o644);
+    chmodSync(path, OUTPUT_FILE_MODE);
   }
 }
 
