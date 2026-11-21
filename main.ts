@@ -32,13 +32,32 @@ function makeWorldReadable(path) {
 const repoRoot = fileURLToPath(new URL('.', import.meta.url));
 const outputDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
+// Fail fast, before copying anything, when the hand-in is incomplete:
+// the game must have its entry page, and screenshots/ must hold the 3 or 4
+// real renders the gate allows, each inside its 256 KiB cap.
+if (!existsSync(join(repoRoot, 'game', 'index.html'))) {
+  throw new Error('game/index.html is missing — nothing to hand in');
+}
+const shotsDir = join(repoRoot, 'screenshots');
+const shots = existsSync(shotsDir)
+  ? readdirSync(shotsDir).filter((name) => !name.startsWith('.'))
+  : [];
+if (shots.length < 3 || shots.length > 4) {
+  throw new Error(`screenshots/ holds ${shots.length} images, need 3 or 4`);
+}
+for (const name of shots) {
+  const size = statSync(join(shotsDir, name)).size;
+  if (size > 262144) {
+    throw new Error(`screenshots/${name} is ${size} bytes, over the 256 KiB cap`);
+  }
+}
+
 // Copy the playable game exactly as it sits in the repository.
 mkdirSync(outputDir, { recursive: true });
 cpSync(join(repoRoot, 'game'), join(outputDir, 'game'), { recursive: true });
 
 // Copy the screenshots the same way; the first by name is the cover.
 mkdirSync(join(outputDir, 'screenshots'), { recursive: true });
-const shotsDir = join(repoRoot, 'screenshots');
 if (existsSync(shotsDir)) {
   cpSync(shotsDir, join(outputDir, 'screenshots'), { recursive: true });
 }
